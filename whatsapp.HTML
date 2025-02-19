@@ -3,13 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WhatsApp Group Chat</title>
+  <title>Group Chat</title>
   <style>
+    /* Global Styles */
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Roboto', sans-serif;
       margin: 0;
       padding: 0;
-      background: #e9edf0;
+      background: #121212;
+      color: #EAEAEA;
       display: flex;
       flex-direction: column;
       height: 100vh;
@@ -17,91 +19,107 @@
 
     /* Header */
     #chat-header {
-      background: #075e54;
-      color: #fff;
+      background: #1F1F1F;
+      color: #EAEAEA;
       padding: 15px;
       text-align: center;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
+      border-bottom: 1px solid #333;
     }
 
     /* Chat Container */
     #chat-container {
       flex: 1;
       overflow-y: auto;
-      padding: 10px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
+      background: #181818;
+      scrollbar-width: thin;
+      scrollbar-color: #555 #1F1F1F;
     }
 
+    #chat-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #chat-container::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 4px;
+    }
+
+    /* Message Styles */
     .message {
       max-width: 70%;
-      padding: 10px;
-      margin: 5px 10px;
-      border-radius: 15px;
+      padding: 12px;
+      margin: 10px;
+      border-radius: 12px;
       word-wrap: break-word;
       position: relative;
-      cursor: pointer;
-      border: 1px solid #ccc;
-    }
-
-    .sender {
-      font-size: 12px;
-      font-weight: bold;
-      margin-bottom: 5px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
     }
 
     .sent {
       align-self: flex-end;
-      background: #dcf8c6;
-      color: #000;
+      background: #4CAF50;
+      color: #FFFFFF;
     }
 
     .received.amaar {
       align-self: flex-start;
-      background: #add8e6;
-      color: #000;
+      background: #2962FF;
+      color: #FFFFFF;
     }
 
     .received.inaya {
       align-self: flex-start;
-      background: #ffd580;
-      color: #000;
+      background: #FFD54F;
+      color: #333;
     }
 
     .received.vanika {
       align-self: flex-start;
-      background: #ffb6c1;
-      color: #000;
+      background: #F06292;
+      color: #FFFFFF;
     }
 
-    /* Hover Options */
-    .message:hover .options {
-      display: flex;
+    .reply-container {
+      background: #2C2C2C;
+      padding: 8px;
+      border-left: 4px solid #555;
+      margin-bottom: 10px;
+      border-radius: 8px;
     }
 
+    .sender {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    /* Options Menu */
     .options {
       display: none;
       position: absolute;
-      top: 0;
-      right: -150px;
-      background: #fff;
-      border: 1px solid #ccc;
+      top: 10px;
+      background: #1F1F1F;
+      border: 1px solid #333;
       border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-      padding: 5px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.5);
       z-index: 10;
+      min-width: 130px;
       flex-direction: column;
-      min-width: 120px;
+      padding: 5px;
     }
 
     .option {
-      padding: 8px;
+      padding: 10px;
       cursor: pointer;
       text-align: center;
       font-size: 14px;
-      color: #075e54;
-      border-bottom: 1px solid #ddd;
+      color: #EAEAEA;
+      border-bottom: 1px solid #333;
     }
 
     .option:last-child {
@@ -109,41 +127,106 @@
     }
 
     .option:hover {
-      background: #f0f0f0;
+      background: #333;
     }
 
-    /* Input Box */
+    .message:hover .options {
+      display: flex;
+    }
+
+    /* Input Section */
     #message-box {
       display: flex;
-      background: #f0f0f0;
-      padding: 10px;
+      background: #1F1F1F;
+      padding: 15px;
+      border-top: 1px solid #333;
     }
 
     #message-input {
       flex: 1;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      padding: 12px;
+      border: none;
+      border-radius: 25px;
+      background-color: #333;
+      color: #EAEAEA;
+      font-size: 16px;
+      outline: none;
       margin-right: 10px;
     }
 
     #send-btn {
-      padding: 10px 20px;
-      background: #25d366;
-      color: #fff;
+      padding: 12px 20px;
+      background: #2962FF;
+      color: #FFFFFF;
       border: none;
-      border-radius: 5px;
+      border-radius: 25px;
       cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s ease;
     }
 
     #send-btn:hover {
-      background: #20c056;
+      background: #1E50D1;
     }
+
+    /* Quoted Reply */
+    #quoted-message {
+      background: #2C2C2C;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border-left: 4px solid #FFD700;
+    }
+
+    #quoted-message .quoted-text {
+      font-style: italic;
+      color: #EAEAEA;
+    }
+
+    /* Emoji React Section */
+    .emoji-reacts {
+      display: none;
+      position: absolute;
+      background: #1F1F1F;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+      top: 0;
+      left: 0;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    .emoji-reacts span {
+      font-size: 24px;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .emoji-reacts span:hover {
+      background-color: #333;
+      border-radius: 50%;
+    }
+
+    .reaction-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-top: 5px;
+    }
+
+    .reaction-container span {
+      margin-right: 5px;
+      font-size: 18px;
+    }
+
   </style>
 </head>
 <body>
-  <div id="chat-header">WhatsApp Group Chat</div>
+  <div id="chat-header">Group Chat</div>
   <div id="chat-container"></div>
+  <div id="quoted-message"></div> <!-- Quoted message appears here -->
   <div id="message-box">
     <input type="text" id="message-input" placeholder="Type a message...">
     <button id="send-btn">Send</button>
@@ -153,7 +236,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
     import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-firestore.js";
 
-    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyBkRMAV35xlf2i0vCYpXtXX-CNLN5d14qU",
       authDomain: "talk-91c2b.firebaseapp.com",
@@ -169,50 +251,24 @@
     const chatContainer = document.getElementById("chat-container");
     const messageInput = document.getElementById("message-input");
     const sendBtn = document.getElementById("send-btn");
+    const quotedMessageContainer = document.getElementById("quoted-message");
 
-    // Simulated logged-in user
+    let repliedMessage = null;
     const user = localStorage.getItem("user") || "Unknown";
 
-    // Reference to Firestore collection
     const messagesRef = collection(db, "messages");
 
-    // Real-time listener
     const q = query(messagesRef, orderBy("timestamp", "asc"));
     onSnapshot(q, (snapshot) => {
       chatContainer.innerHTML = "";
       snapshot.forEach((doc) => {
         const message = doc.data();
-        const messageElement = document.createElement("div");
-        messageElement.classList.add("message");
-        messageElement.setAttribute("data-id", doc.id);
-
-        const userClasses = {
-          Amaar: "amaar",
-          Inaya: "inaya",
-          Vanika: "vanika",
-        };
-
-        if (message.sender === user) {
-          messageElement.classList.add("sent");
-        } else {
-          messageElement.classList.add("received", userClasses[message.sender]);
-        }
-
-        messageElement.innerHTML = `
-          <div class="sender">${message.sender}</div>
-          <div>${message.text}</div>
-          <div class="options">
-            <div class="option edit">Edit</div>
-            <div class="option delete">Delete</div>
-            <div class="option react">React</div>
-          </div>
-        `;
+        const messageElement = createMessageElement(message, doc.id);
         chatContainer.appendChild(messageElement);
       });
 
       chatContainer.scrollTop = chatContainer.scrollHeight;
 
-      // Add event listeners to options
       document.querySelectorAll(".edit").forEach((editBtn) => {
         editBtn.addEventListener("click", handleEdit);
       });
@@ -220,54 +276,138 @@
       document.querySelectorAll(".delete").forEach((deleteBtn) => {
         deleteBtn.addEventListener("click", handleDelete);
       });
+
+      document.querySelectorAll(".react").forEach((reactBtn) => {
+        reactBtn.addEventListener("click", handleReact);
+      });
+
+      document.querySelectorAll(".reply").forEach((replyBtn) => {
+        replyBtn.addEventListener("click", handleReply);
+      });
     });
 
-    // Send message
+    function createMessageElement(message, id) {
+      const messageElement = document.createElement("div");
+      messageElement.classList.add("message");
+      messageElement.setAttribute("data-id", id);
+
+      if (message.sender === user) {
+        messageElement.classList.add("sent");
+      } else {
+        messageElement.classList.add("received", message.sender.toLowerCase());
+      }
+
+      const reactionHTML = message.reactions
+        ? Object.entries(message.reactions)
+            .map(([emoji, count]) => `<span>${emoji} ${count}</span>`)
+            .join(" ")
+        : "";
+
+      messageElement.innerHTML = `
+        <div class="sender">${message.sender}</div>
+        <div class="text">${message.text}</div>
+        <div class="options">
+          <div class="option edit">Edit</div>
+          <div class="option delete">Delete</div>
+          <div class="option reply">Reply</div>
+          <div class="option react">React</div>
+        </div>
+        <div class="reaction-container">${reactionHTML}</div>
+        <div class="emoji-reacts" id="react-${id}">
+          <span>❤️</span>
+          <span>🔥</span>
+          <span>👍</span>
+          <span>🤣</span>
+          <span>☠️</span>
+        </div>
+      `;
+
+      if (message.sender === user) {
+        messageElement.querySelector(".options").style.left = "unset";
+        messageElement.querySelector(".options").style.right = "10px";
+      } else {
+        messageElement.querySelector(".options").style.left = "10px";
+        messageElement.querySelector(".options").style.right = "unset";
+      }
+
+      return messageElement;
+    }
+
     sendBtn.addEventListener("click", async () => {
       const text = messageInput.value.trim();
       if (text) {
-        await addDoc(messagesRef, {
+        const messageData = {
           sender: user,
           text,
           timestamp: serverTimestamp(),
-        });
+        };
+
+        if (repliedMessage) {
+          messageData.replyTo = repliedMessage;
+        }
+
+        await addDoc(messagesRef, messageData);
         messageInput.value = "";
+        repliedMessage = null;
+        quotedMessageContainer.innerHTML = ""; // Clear quoted message
       }
     });
 
-    // Handle delete
     async function handleDelete(event) {
       const messageId = event.target.closest(".message").dataset.id;
       await deleteDoc(doc(db, "messages", messageId));
     }
 
-    // Handle edit
     async function handleEdit(event) {
       const messageElement = event.target.closest(".message");
       const messageId = messageElement.dataset.id;
-      const newText = prompt("Edit your message:", messageElement.querySelector("div:nth-child(2)").textContent);
+      const newText = prompt("Edit your message:", messageElement.querySelector(".text").textContent);
       if (newText) {
         await updateDoc(doc(db, "messages", messageId), { text: newText });
       }
     }
 
-    // Simulate login based on user
-    window.addEventListener("load", () => {
-      const password = prompt("Enter your password:");
-      const users = {
-        "amaar123": "Amaar",
-        "inaya456": "Inaya",
-        "vanika789": "Vanika"
-      };
+    function handleReact(event) {
+      const messageElement = event.target.closest(".message");
+      const reactBox = messageElement.querySelector(".emoji-reacts");
+      reactBox.style.display = reactBox.style.display === "flex" ? "none" : "flex";
 
-      if (users[password]) {
-        localStorage.setItem("user", users[password]);
-        alert(`Welcome, ${users[password]}!`);
-      } else {
-        alert("Incorrect password. You will be logged in as a guest.");
-        localStorage.setItem("user", "Guest");
+      reactBox.querySelectorAll("span").forEach((emoji) => {
+        emoji.addEventListener("click", () => {
+          const emojiText = emoji.textContent.trim();
+          const messageId = messageElement.dataset.id;
+
+          updateDoc(doc(db, "messages", messageId), {
+            [`reactions.${emojiText}`]: (message.reactions?.[emojiText] || 0) + 1,
+          });
+        });
+      });
+    }
+
+    function handleReply(event) {
+      const messageElement = event.target.closest(".message");
+      const messageText = messageElement.querySelector(".text").textContent;
+      const messageSender = messageElement.querySelector(".sender").textContent;
+
+      quotedMessageContainer.innerHTML = `
+        <div class="quoted-sender">${messageSender}</div>
+        <div class="quoted-text">${messageText}</div>
+      `;
+
+      repliedMessage = { sender: messageSender, text: messageText };
+    }
+
+    function setUser() {
+      const userName = prompt("Enter your name:");
+      if (userName) {
+        localStorage.setItem("user", userName);
+        location.reload();
       }
-    });
+    }
+
+    if (!localStorage.getItem("user")) {
+      setUser();
+    }
   </script>
 </body>
 </html>
